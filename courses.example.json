@@ -1,0 +1,9 @@
+[
+ {
+  "name": "课程名A",
+  "courseId": "000000000",
+  "classId": "000000000",
+  "url": "https://mooc1.chaoxing.com/mooc2/work/list?courseId={courseId}&classId={classId}&cpi={cpi}&ut=s&t={timestamp}&stuenc={stuenc}&enc={enc}",
+  "_comment": "从浏览器 F12 进入课程作业页，抓取作业列表 iframe 的 URL 填入；enc 每课不同且会过期，需定期更新"
+ }
+]

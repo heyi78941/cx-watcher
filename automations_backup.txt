@@ -1,0 +1,15 @@
+学习通作业监控|FREQ=DAILY;BYHOUR=7;BYMINUTE=30|【每日兜底全量检查】学习通账号 （账号）（密码 （密码））。实时监控由本机脚本 cx-watcher 负责（上课时段每分钟轮询+Mac通知），你负责每日一次的全量核对和维护：
+1. 用 agent-browser 打开 https://i.chaoxing.com（必要时登录），进入"课程"→"我学的课"，列出本学期进行中课程（材料科学基础、材料成型原理、冲压工艺学、金属塑性加工工艺学1上、霾污染防治T030010，及新增课程），逐门检查"作业""考试"标签：名称、类型、状态、截止时间。
+2. 与 /Users/heyi/WorkBuddy/Claw/cx-watcher/state.json 的 seen 记录核对：若发现有作业脚本未记录/漏检（尤其新课程），立即按标准流程处理：AI 认真作答（作图题用 matplotlib 画图存 /Users/heyi/Desktop/学习通作业/<课程名>/<日期+作业名>/，日期开头命名，并用 body.innerHTML base64 插入 UEditor、present_files 展示），随堂练习直接提交（.jb_btn_92 需 dispatch mousedown/mouseup+click），普通作业"暂时保存"并刷新验证。
+3. 【维护】检查 /Users/heyi/WorkBuddy/Claw/cx-watcher/ 的健康：pgrep -fl watcher.py 确认进程存活，死了用 nohup 拉起；用 curl 或 requests 验证 courses.json 里各课程列表 URL 仍有效，若某课 URL 失效（enc 变化），从浏览器重新采集该课作业列表 URL 并更新 courses.json（courseId/classId/name 不变）；若浏览器登录后 cookie 有更新，把新 cookie 导出到 /Users/heyi/WorkBuddy/Claw/cx-watcher/cookies.json（JSON 格式 {name: value}）。
+4. 【例外】霾污染防治"结业-调研报告"禁止代写，仅提醒截止（2026-09-23 16:20）。
+5. 把本次"学习通作业快照"（各作业名称+类型+状态+截止时间+处理结果）追加到当天记忆文件，并在回复中向用户报告（无变化则简短汇报）。最后 agent-browser close。|1
+随堂练习即时处理器|FREQ=HOURLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYHOUR=8,9,10,11,12,13,14,15,16,17,18|【随堂练习极速处理器】执行：
+1. bash 检查 /Users/heyi/WorkBuddy/Claw/cx-watcher/alert.json 是否存在。
+2. 【不存在】回复"无告警"并结束，禁止任何其他操作（保持最小成本）。
+3. 【存在】立即用 bash 执行 `mv alert.json alert_claimed_$(date +%s).json` 完成认领（防重复处理），然后对认领文件中的 items 逐条处理：
+   - 名称含"随堂练习/练习/测验/测试/考试"：时效优先，立刻用 agent-browser 打开 taskUrl（必要时登录，（账号） / （密码）），快速逐题作答并直接提交（可见 .jb_btn_92 确认按钮需 dispatch mousedown/mouseup+click）；作图题用 matplotlib 画图存 /Users/heyi/Desktop/学习通作业/<课程名>/<日期+作业名>/（日期开头命名），base64 经 body.innerHTML 插入 UEditor，present_files 展示；
+   - 普通作业：不动手，回复中一行提醒（每日 7:30 全检会处理）；
+   - 霾污染防治"结业-调研报告"永远禁止代写，仅提醒截止 2026-09-23 16:20。
+4. 处理完删除认领文件，结果追加到当天 /Users/heyi/WorkBuddy/Claw/.workbuddy/memory/YYYY-MM-DD.md，回复醒目报告提交结果（课程、作业名、提交/暂存状态）。
+5. 若 alert.json 刚被认领（存在 alert_claimed_*.json 而无 alert.json），说明另一实例在处理，直接结束。|1

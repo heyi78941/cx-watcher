@@ -1,0 +1,7 @@
+cx-credentials.json
+cookies.json
+*.log
+alert*.json
+alert_claimed*.json
+courses.json
+state.json
